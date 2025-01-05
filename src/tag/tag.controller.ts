@@ -1,5 +1,6 @@
 import { Controller, Get, Module } from '@nestjs/common';
-import { TagService } from './tag.service';
+
+import { TagService } from '@app/tag/tag.service';
 
 @Module({})
 @Controller('tags')
