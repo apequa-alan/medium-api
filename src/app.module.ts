@@ -7,9 +7,15 @@ import { TagModule } from '@app/tag/tag.module';
 import { dataSource } from '../db/data-source';
 import { UserModule } from '@app/user/user.module';
 import { AuthMiddleware } from '@app/user/middlewares/auth.middleware';
+import { ArticleModule } from '@app/article/article.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSource), TagModule, UserModule],
+  imports: [
+    TypeOrmModule.forRoot(dataSource),
+    TagModule,
+    UserModule,
+    ArticleModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
