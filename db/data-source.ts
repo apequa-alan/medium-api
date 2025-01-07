@@ -1,14 +1,17 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
+require('dotenv').config();
+
 export const dataSource: DataSourceOptions = {
   type: 'postgres',
-  host: 'john.db.elephantsql.com',
-  port: 5432,
-  username: 'zhdzmkms',
-  password: 'JMkTUtVEfNbLaa60YspC6zcD2W0yRVpU',
-  database: 'zhdzmkms',
+  host: process.env.HOST,
+  port: Number(process.env.PORT || 5432),
+  username: process.env.USERNAME,
+  password: process.env.PASS,
+  database: process.env.DB,
   synchronize: false,
   entities: ['src/**/*.entity.ts'],
+  migrations: ['db/migrations/*.ts']
 };
 
 export default new DataSource(dataSource);
