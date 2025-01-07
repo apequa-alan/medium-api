@@ -1,7 +1,7 @@
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Column, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
@@ -50,6 +50,9 @@ export class UserService {
     };
   }
 
+  findUser(id: number): Promise<UserEntity> {
+    return this.userEntity.findOne({ where: { id } });
+  }
   async login(payload: LoginUserDto) {
     const userByEmail = await this.userEntity.findOne({
       where: { email: payload.email },
@@ -66,7 +69,7 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    delete userByEmail.password
+    delete userByEmail.password;
     return this.buildUserResponse(userByEmail);
   }
 }
