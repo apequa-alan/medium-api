@@ -9,18 +9,19 @@ import { UserEntity } from '@app/user/user.entity';
 import { JWT_SECRET } from '@app/config';
 import { UserResponse } from '@app/user/types';
 import { LoginUserDto } from '@app/user/dto/loginUser.dto';
+import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userEntity: Repository<UserEntity>,
+    private readonly userEntityRepository: Repository<UserEntity>,
   ) {}
   async createUser(payload: CreateUserDto): Promise<UserEntity> {
-    const userByEmail = await this.userEntity.findOne({
+    const userByEmail = await this.userEntityRepository.findOne({
       where: { email: payload.email },
     });
-    const userByUsername = await this.userEntity.findOne({
+    const userByUsername = await this.userEntityRepository.findOne({
       where: { username: payload.username },
     });
     console.log(userByEmail, userByUsername);
@@ -32,7 +33,7 @@ export class UserService {
     }
     const user = new UserEntity();
     Object.assign(user, payload);
-    return await this.userEntity.save(user);
+    return await this.userEntityRepository.save(user);
   }
 
   generateJwt(user: UserEntity) {
@@ -50,11 +51,20 @@ export class UserService {
     };
   }
 
-  findUser(id: number): Promise<UserEntity> {
-    return this.userEntity.findOne({ where: { id } });
+  findUserById(id: number): Promise<UserEntity> {
+    return this.userEntityRepository.findOne({ where: { id } });
   }
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(userId);
+    Object.assign(user, updateUserDto);
+    return this.userEntityRepository.save(user);
+  }
+
   async login(payload: LoginUserDto) {
-    const userByEmail = await this.userEntity.findOne({
+    const userByEmail = await this.userEntityRepository.findOne({
       where: { email: payload.email },
       select: ['password', 'email', 'id', 'username', 'bio', 'image'],
     });
