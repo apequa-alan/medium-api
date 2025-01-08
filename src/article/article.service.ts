@@ -115,6 +115,52 @@ export class ArticleService {
     return await this.articleRepository.save(article);
   }
 
+  async addArticleToFavorites(
+    userId: number,
+    slug: string,
+  ): Promise<ArticleEntity> {
+    const article = await this.findArticleBySlug(slug);
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['favorites'],
+    });
+
+    const isNotFavorite = !user.favorites.find(
+      (articleInFavorites) => articleInFavorites.id === article.id,
+    );
+    if (isNotFavorite) {
+      user.favorites.push(article);
+      article.favoritesCount++;
+      await this.userRepository.save(user);
+      await this.articleRepository.save(article);
+    }
+
+    return article;
+  }
+
+  async removeArticleFromFavorites(
+    userId: number,
+    slug: string,
+  ): Promise<ArticleEntity> {
+    const article = await this.findArticleBySlug(slug);
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['favorites'],
+    });
+
+    const favoriteIndex = user.favorites.findIndex(
+      (articleInFavorites) => articleInFavorites.id === article.id,
+    );
+    if (favoriteIndex >= 0) {
+      user.favorites.splice(favoriteIndex, 1);
+      article.favoritesCount--;
+      await this.userRepository.save(user);
+      await this.articleRepository.save(article);
+    }
+
+    return article;
+  }
+
   buildArticleResponse(article: ArticleEntity): ArticleResponse {
     return {
       article,
