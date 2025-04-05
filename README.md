@@ -69,3 +69,6 @@ $ npm run db:create db/migrations/{migrationName}
 $ npm run db:drop
 $ npm run db:migrate
 ```
+# for seeding initial data (need tot run after init db structure)
+$ npm run db:seed
+```
